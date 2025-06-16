@@ -99,7 +99,7 @@ The repository comes with a ready-to-use `Makefile` to help manage TLS certs, bu
 
 ```bash
 git clone <repo-url>
-cd modsecuirty
+cd modsecurity-nginx-docker
 make all     # Will build and deploy reverse proxy WAF + app
 ```
 
