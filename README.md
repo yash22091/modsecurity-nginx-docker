@@ -40,6 +40,66 @@ modsecurity-nginx-docker/
 
 ## 🚀 Getting Started
 
+📦 Makefile Shortcuts for Quick Deployment
+
+The repository comes with a ready-to-use Makefile to help manage TLS certs, build the WAF, update rules, and deploy quickly.
+
+Command
+
+Description
+
+make all
+
+🔧 Build & deploy full stack (WAF + app) with reverse proxy setup
+
+make build
+
+🛠 Build standalone WAF image
+
+make up
+
+🟢 Start standalone WAF mode (modsec-data/nginx.conf)
+
+make down
+
+⛔ Stop standalone WAF
+
+make restart
+
+🔁 Restart standalone WAF
+
+make logs
+
+📋 Tail logs from WAF
+
+make watch
+
+♻️ Hot reload rules via watcher.sh
+
+make build-reverse
+
+🛠 Build reverse proxy + Node.js app
+
+make up-reverse
+
+🚀 Run reverse proxy mode with backend app
+
+make down-reverse
+
+🛑 Stop reverse proxy setup
+
+make logs-reverse
+
+📋 Logs from reverse setup
+
+make update-crs
+
+🔄 Download & update latest OWASP CRS rules
+
+make gen-certs
+
+🔐 Generate TLS certificates
+
 ### 1. Clone and Build
 
 ```bash
