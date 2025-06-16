@@ -186,4 +186,4 @@ PRs are welcome. Open issues for bugs or enhancements.
 
 ---
 
-Made with ❤️ by \Yash Patel. Secure your web apps the open way.
+Made with ❤️ by Yash Patel. Secure your web apps the open way.
