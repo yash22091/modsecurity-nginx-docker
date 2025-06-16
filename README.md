@@ -161,7 +161,7 @@ SecRule ARGS "@rx (?i)(union(.*?)select|select.+from)" "id:10003,phase:2,deny,lo
 
 ---
 
-## ⇄️ Dynamic Rule Reload (Watcher)
+## Dynamic Rule Reload (Watcher)
 
 The `watcher.sh` script watches `custom-rules.conf` and reloads NGINX:
 
