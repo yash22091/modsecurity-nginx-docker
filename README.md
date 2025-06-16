@@ -1,10 +1,10 @@
-# 🔐 ModSecurity NGINX WAF - Containerized Open Source Web Application Firewall
+# ModSecurity NGINX WAF - Containerized Open Source Web Application Firewall
 
-## 📊 Overview
+## Overview
 
 This project packages **ModSecurity v3**, **OWASP Core Rule Set (CRS)**, and **NGINX** into a lightweight, secure, and flexible **containerized Web Application Firewall** (WAF). It supports both **standalone deployment** and **reverse proxy mode** in front of backend apps like **Node.js**, **Django**, **Flask**, or **Apache** servers.
 
-# 🔐 How to Build a Containerized Open Source WAF with ModSecurity + NGINX
+# How to Build a Containerized Open Source WAF with ModSecurity + NGINX
 
 ## Introduction: Why a WAF is Critical in the Modern Web
 
@@ -39,7 +39,7 @@ This stack is ideal for:
 
 ---
 
-## 📁 Directory Structure Explained
+## Directory Structure Explained
 
 ```bash
 modsecuirty/
@@ -62,7 +62,7 @@ modsecuirty/
 ├── watcher.sh                   # Auto-reload for rule changes
 ```
 
-### 💡 nginx.conf Usage Strategy
+### nginx.conf Usage Strategy
 
 * `modsec-data/nginx.conf`: Used by default for standalone WAF.
 * `modsec-data/nginx.conf.reverse.proxy`: Used when reverse proxying to a backend. **Make sure to update proxy settings inside it as per your app ports and routes.**
@@ -71,31 +71,31 @@ You can mount either in `docker-compose.yml` or `docker-compose.override.yml`.
 
 ---
 
-## 📦 Makefile Shortcuts for Quick Deployment
+## Makefile Shortcuts for Quick Deployment
 
 The repository comes with a ready-to-use `Makefile` to help manage TLS certs, build the WAF, update rules, and deploy quickly.
 
-| Command              | Description                                                       |
-| -------------------- | ----------------------------------------------------------------- |
-| `make all`           | 🔧 Build & deploy full stack (WAF + app) with reverse proxy setup |
-| `make build`         | 🛠 Build standalone WAF image                                     |
-| `make up`            | 🟢 Start standalone WAF mode (`modsec-data/nginx.conf`)           |
-| `make down`          | ⛔ Stop standalone WAF                                             |
-| `make restart`       | 🔁 Restart standalone WAF                                         |
-| `make logs`          | 📋 Tail logs from WAF                                             |
-| `make watch`         | ♻️ Hot reload rules via watcher.sh                                |
-| `make build-reverse` | 🛠 Build reverse proxy + Node.js app                              |
-| `make up-reverse`    | 🚀 Run reverse proxy mode with backend app                        |
-| `make down-reverse`  | 🛑 Stop reverse proxy setup                                       |
-| `make logs-reverse`  | 📋 Logs from reverse setup                                        |
-| `make update-crs`    | 🔄 Download & update latest OWASP CRS rules                       |
-| `make gen-certs`     | 🔐 Generate TLS certificates                                      |
+| Command              | Description                                                    |
+| -------------------- | ---------------------------------------------------------------|
+| `make all`           | Build & deploy full stack (WAF + app) with reverse proxy setup |
+| `make build`         | Build standalone WAF image                                     |
+| `make up`            | Start standalone WAF mode (`modsec-data/nginx.conf`)           |
+| `make down`          | Stop standalone WAF                                            |
+| `make restart`       | Restart standalone WAF                                         |
+| `make logs`          | Tail logs from WAF                                             |
+| `make watch`         | Hot reload rules via watcher.sh                                |
+| `make build-reverse` | Build reverse proxy + Node.js app                              |
+| `make up-reverse`    | Run reverse proxy mode with backend app                        |
+| `make down-reverse`  | Stop reverse proxy setup                                       |
+| `make logs-reverse`  | Logs from reverse setup                                        |
+| `make update-crs`    | Download & update latest OWASP CRS rules                       |
+| `make gen-certs`     | Generate TLS certificates                                      |
 
 ---
 
-## 🚀 Getting Started in Minutes
+## Getting Started in Minutes
 
-### ▶️ First-Time Full Setup
+### First-Time Full Setup
 
 ```bash
 git clone <repo-url>
@@ -103,14 +103,14 @@ cd modsecurity-nginx-docker
 make all     # Will build and deploy reverse proxy WAF + app
 ```
 
-### ▶️ Standalone WAF Deployment
+### Standalone WAF Deployment
 
 ```bash
 make build
 make up
 ```
 
-### ▶️ Reverse Proxy WAF + Backend App
+### Reverse Proxy WAF + Backend App
 
 ```bash
 make down           # Stop standalone mode first
@@ -122,7 +122,7 @@ Visit: `https://<your-ip>:8443`
 
 ---
 
-## 🧠 ModSecurity Custom Rules (Example)
+## ModSecurity Custom Rules (Example)
 
 ```apache
 # Block a specific parameter
@@ -152,7 +152,7 @@ No container restart is needed. For this to work:
 
 ---
 
-## 🛘 Troubleshooting Guide
+## Troubleshooting Guide
 
 | Problem                    | Solution                                                               |
 | -------------------------- | ---------------------------------------------------------------------- |
@@ -165,7 +165,7 @@ No container restart is needed. For this to work:
 
 ---
 
-## 🔐 Security Best Practices Implemented
+## Security Best Practices Implemented
 
 * `server_tokens off` to hide version info
 * HTTPS enforced with redirect from HTTP
@@ -176,11 +176,11 @@ No container restart is needed. For this to work:
 * Auto reload of rules via watcher
 
 
-## 🚪 License
+## License
 
 MIT License. Based on open-source work by OWASP, NGINX, and ModSecurity teams.
 
-## 🙌 Contributing
+## Contributing
 
 PRs are welcome. Open issues for bugs or enhancements.
 
