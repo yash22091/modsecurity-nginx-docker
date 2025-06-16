@@ -4,11 +4,9 @@
 
 This project packages **ModSecurity v3**, **OWASP Core Rule Set (CRS)**, and **NGINX** into a lightweight, secure, and flexible **containerized Web Application Firewall** (WAF). It supports both **standalone deployment** and **reverse proxy mode** in front of backend apps like **Node.js**, **Django**, **Flask**, or **Apache** servers.
 
-## 📁 Project Structure
-
 # 🔐 How to Build a Containerized Open Source WAF with ModSecurity + NGINX
 
-## 🙸 Introduction: Why a WAF is Critical in the Modern Web
+## Introduction: Why a WAF is Critical in the Modern Web
 
 Every modern web application is exposed to risks like SQL injection, cross-site scripting (XSS), automated scanners, and more. While frameworks offer built-in defenses, these are often not enough, especially when your app is public-facing.
 
@@ -28,7 +26,7 @@ This stack is ideal for:
 
 ---
 
-### 🏃‍♂️ Runtime Best Practices
+###  Runtime Best Practices
 
 * `server_tokens off` to hide NGINX version
 * Strong TLS setup with fallback redirects
