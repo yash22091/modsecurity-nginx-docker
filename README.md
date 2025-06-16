@@ -4,38 +4,62 @@
 
 This project packages **ModSecurity v3**, **OWASP Core Rule Set (CRS)**, and **NGINX** into a lightweight, secure, and flexible **containerized Web Application Firewall** (WAF). It supports both **standalone deployment** and **reverse proxy mode** in front of backend apps like **Node.js**, **Django**, **Flask**, or **Apache** servers.
 
-# How to Build a Containerized Open Source WAF with ModSecurity + NGINX
+# Containerized Open Source WAF with ModSecurity + NGINX
 
-## Introduction: Why a WAF is Critical in the Modern Web
+## Prerequisites
 
-Every modern web application is exposed to risks like SQL injection, cross-site scripting (XSS), automated scanners, and more. While frameworks offer built-in defenses, these are often not enough, especially when your app is public-facing.
+Before deploying this WAF stack, ensure your environment has:
 
-A Web Application Firewall (WAF) becomes a gatekeeper that inspects every HTTP request, filters malicious payloads, and logs suspicious behavior before it hits your backend.
+### Required Tools
 
-* **ModSecurity v3** (the OWASP open-source WAF engine)
-* **NGINX** (serving as reverse proxy with WAF integration)
-* **OWASP Core Rule Set (CRS)** (predefined rules for blocking common attack patterns)
-* **Docker + Docker Compose** (for reproducible, scalable deployments)
+| Tool               | Minimum Version | Purpose                        |
+|--------------------|------------------|--------------------------------|
+| **Docker**         | >= 20.10         | Container build/runtime        |
+| **Docker Compose** | >= 1.29          | Multi-container orchestration |
+| **Make**           | *(Optional)*     | Use `Makefile` shortcuts       |
+| **OpenSSL**        | >= 1.1           | TLS certificate generation     |
+| **Git**            | >= 2.x           | Cloning/pushing repo           |
 
+### 💻 System Requirements
 
-This stack is ideal for:
+- OS: Linux/macOS (Ubuntu, Alpine, etc.)
+- CPU: 1–2 vCPU
+- RAM: 1–2 GB (2 GB for WAF + backend)
 
-* Protecting APIs or web apps in Kubernetes
-* Acting as a reverse proxy for legacy applications
-* Hosting secure staging environments
+### Network Ports
+
+- **8080/8443** or **80/443** must be open and unused
 
 ---
 
-###  Runtime Best Practices
+## Why Use a WAF?
 
-* `server_tokens off` to hide NGINX version
-* Strong TLS setup with fallback redirects
-* Rate limiting configured with `limit_req_zone`
-* Secure HTTP headers added (CSP, X-XSS-Protection, Referrer-Policy)
-* HTTPS-only entrypoint (redirect from HTTP handled in config)
-* TLS cert auto-generation is conditional (skips if certs already present)
-* Entrypoint triggers inotify-based watcher for hot reloads without restarting container
-* Optional recommendation to run as non-root user in hardened production environments
+A **Web Application Firewall (WAF)** helps detect and block:
+
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- Automated bots/scanners
+- Protocol misuse (e.g., header abuse)
+
+You need it if your app is:
+
+- Internet-facing
+- Serving APIs
+- Lacking granular firewall protection
+- Running in Docker/Kubernetes environments
+
+---
+
+## Features
+
+- ModSecurity v3 + OWASP CRS rules
+- Docker + Alpine base image
+- Custom rules support
+- Inotify-based hot reload of rules
+- Secure HTTP headers & rate limiting
+- Standalone OR Reverse Proxy setup
+- Configurable backend app integration (Node.js, Apache, Django)
+- Sample Node.js test app included
 
 ---
 
