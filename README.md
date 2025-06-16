@@ -6,96 +6,177 @@ This project packages **ModSecurity v3**, **OWASP Core Rule Set (CRS)**, and **N
 
 ## 📁 Project Structure
 
-```
-modsecurity-nginx-docker/
-├── cert-gen.sh                  # TLS cert generation script
-├── docker-compose.yml           # For standalone WAF deployment
-├── docker-compose.override.yml  # For WAF in reverse proxy mode
+# 🔐 How to Build a Containerized Open Source WAF with ModSecurity + NGINX
+
+## 🙸 Introduction: Why a WAF is Critical in the Modern Web
+
+Every modern web application is exposed to risks like SQL injection, cross-site scripting (XSS), automated scanners, and more. While frameworks offer built-in defenses, these are often not enough, especially when your app is public-facing.
+
+A Web Application Firewall (WAF) becomes a gatekeeper that inspects every HTTP request, filters malicious payloads, and logs suspicious behavior before it hits your backend.
+
+* **ModSecurity v3** (the OWASP open-source WAF engine)
+* **NGINX** (serving as reverse proxy with WAF integration)
+* **OWASP Core Rule Set (CRS)** (predefined rules for blocking common attack patterns)
+* **Docker + Docker Compose** (for reproducible, scalable deployments)
+
+
+This stack is ideal for:
+
+* Protecting APIs or web apps in Kubernetes
+* Acting as a reverse proxy for legacy applications
+* Hosting secure staging environments
+
+---
+
+### 🏃‍♂️ Runtime Best Practices
+
+* `server_tokens off` to hide NGINX version
+* Strong TLS setup with fallback redirects
+* Rate limiting configured with `limit_req_zone`
+* Secure HTTP headers added (CSP, X-XSS-Protection, Referrer-Policy)
+* HTTPS-only entrypoint (redirect from HTTP handled in config)
+* TLS cert auto-generation is conditional (skips if certs already present)
+* Entrypoint triggers inotify-based watcher for hot reloads without restarting container
+* Optional recommendation to run as non-root user in hardened production environments
+
+---
+
+## 📁 Directory Structure Explained
+
+```bash
+modsecuirty/
+├── cert-gen.sh                  # TLS cert generator
+├── docker-compose.yml           # Compose file for standalone WAF
+├── docker-compose.override.yml  # WAF in front of app
+├── Makefile                     # CLI shortcuts for lifecycle
 ├── modsec-data/
-│   ├── certs/                   # SSL certs
-│   ├── crs/                     # OWASP CRS rules
-│   ├── custom-rules.conf        # Your custom ModSecurity rules
-│   ├── modsecurity.conf         # Main WAF configuration
-│   ├── logs/                    # Logs from WAF
-│   ├── nginx.conf               # Standalone NGINX + WAF config
-│   └── nginx.conf.reverse.proxy # Reverse proxy NGINX + WAF config
-├── nodeapp/                     # Sample backend app (Node.js)
-│   ├── app.js                   # Simple Node.js app
-│   └── Dockerfile               # Node.js app container
-├── watcher.sh                   # Auto-reload WAF rules using inotify
-├── update-crs.sh                # Script to fetch latest OWASP CRS
-├── Dockerfile                   # Multi-stage build for ModSecurity+NGINX
-├── Makefile                     # CLI shortcuts for common commands
+│   ├── certs/                   # TLS certs
+│   ├── crs/                     # OWASP Core Rule Set
+│   ├── custom-rules.conf        # Your ModSecurity rules
+│   ├── modsecurity.conf         # Main WAF config
+│   ├── nginx.conf               # NGINX config (standalone)
+│   ├── nginx.conf.reverse.proxy # NGINX config (reverse proxy)
+│   └── logs/                    # ModSecurity logs
+├── nodeapp/
+│   ├── app.js                   # Node.js backend
+│   └── Dockerfile               # Dockerfile for Node app
+├── update-crs.sh                # CRS updater
+├── watcher.sh                   # Auto-reload for rule changes
 ```
 
-## ✨ Features
+### 💡 nginx.conf Usage Strategy
 
-* OWASP CRS included
-* Auto HTTPS with self-signed certs
-* TLS fallback redirect from HTTP
-* Secure headers
-* Rate limiting
-* Auto-reload on rule changes (inotify-based)
-* Deploy as standalone or reverse proxy
+* `modsec-data/nginx.conf`: Used by default for standalone WAF.
+* `modsec-data/nginx.conf.reverse.proxy`: Used when reverse proxying to a backend. **Make sure to update proxy settings inside it as per your app ports and routes.**
 
-## 🚀 Getting Started
+You can mount either in `docker-compose.yml` or `docker-compose.override.yml`.
 
-### 1. Clone and Build
+---
+
+## 📦 Makefile Shortcuts for Quick Deployment
+
+The repository comes with a ready-to-use `Makefile` to help manage TLS certs, build the WAF, update rules, and deploy quickly.
+
+| Command              | Description                                                       |
+| -------------------- | ----------------------------------------------------------------- |
+| `make all`           | 🔧 Build & deploy full stack (WAF + app) with reverse proxy setup |
+| `make build`         | 🛠 Build standalone WAF image                                     |
+| `make up`            | 🟢 Start standalone WAF mode (`modsec-data/nginx.conf`)           |
+| `make down`          | ⛔ Stop standalone WAF                                             |
+| `make restart`       | 🔁 Restart standalone WAF                                         |
+| `make logs`          | 📋 Tail logs from WAF                                             |
+| `make watch`         | ♻️ Hot reload rules via watcher.sh                                |
+| `make build-reverse` | 🛠 Build reverse proxy + Node.js app                              |
+| `make up-reverse`    | 🚀 Run reverse proxy mode with backend app                        |
+| `make down-reverse`  | 🛑 Stop reverse proxy setup                                       |
+| `make logs-reverse`  | 📋 Logs from reverse setup                                        |
+| `make update-crs`    | 🔄 Download & update latest OWASP CRS rules                       |
+| `make gen-certs`     | 🔐 Generate TLS certificates                                      |
+
+---
+
+## 🚀 Getting Started in Minutes
+
+### ▶️ First-Time Full Setup
 
 ```bash
-git clone https://github.com/<your-username>/modsecurity-nginx-docker.git
-cd modsecurity-nginx-docker
-make all
+git clone <repo-url>
+cd modsecuirty
+make all     # Will build and deploy reverse proxy WAF + app
 ```
 
-### 2. Run WAF in Standalone Mode
+### ▶️ Standalone WAF Deployment
 
 ```bash
-docker-compose -f docker-compose.yml up -d --build
+make build
+make up
 ```
 
-Visit: `https://localhost:8443`
-
-### 3. Run WAF with Backend App (Reverse Proxy)
+### ▶️ Reverse Proxy WAF + Backend App
 
 ```bash
-docker-compose -f docker-compose.yml down
-
-# Build and launch with reverse proxy
-docker-compose -f docker-compose.override.yml build
-docker-compose -f docker-compose.override.yml up -d
+make down           # Stop standalone mode first
+make build-reverse
+make up-reverse
 ```
 
-Visit: `https://localhost:8443` → gets routed to Node.js backend
+Visit: `https://<your-ip>:8443`
 
-> ⚠️ Make sure to edit `modsec-data/nginx.conf.reverse.proxy` to reflect your custom app's `proxy_pass` settings.
+---
 
-### 4. Enable Rule Watching (Hot Reload)
+## 🧠 ModSecurity Custom Rules (Example)
+
+```apache
+# Block a specific parameter
+SecRule ARGS:testparam "@streq test" "id:10001,phase:2,deny,log,status:403,msg:'Test parameter blocked'"
+
+# Block curl User-Agent
+SecRule REQUEST_HEADERS:User-Agent "@contains curl" "id:10002,phase:1,deny,log,status:403,msg:'Curl blocked'"
+
+# Basic SQLi pattern
+SecRule ARGS "@rx (?i)(union(.*?)select|select.+from)" "id:10003,phase:2,deny,log,status:403,msg:'SQLi blocked'"
+```
+
+---
+
+## ⇄️ Dynamic Rule Reload (Watcher)
+
+The `watcher.sh` script watches `custom-rules.conf` and reloads NGINX:
 
 ```bash
 make watch
 ```
 
-## ⚙️ Build Your Own App
+No container restart is needed. For this to work:
 
-Replace the contents of `nodeapp/` with your own app and Dockerfile. Keep the `EXPOSE` port consistent (e.g., 3000).
+* Mount rules in `docker-compose.yml`
+* Ensure `modsecurity_rules_file` in `modsecurity.conf` includes them
+
+---
+
+## 🛘 Troubleshooting Guide
+
+| Problem                    | Solution                                                               |
+| -------------------------- | ---------------------------------------------------------------------- |
+| `ssl` directive fails      | Rebuild NGINX with `--with-http_ssl_module`                            |
+| Cannot load `.data` files  | Ensure CRS `.data` files are mounted                                   |
+| ModSecurity not triggering | Ensure `SecRuleEngine On` and rule IDs are unique                      |
+| Rule edits not applied     | Use `make watch` or restart container                                  |
+| HTTPS error                | Ensure valid `server.crt` and `server.key` exist                       |
+| WAF config not picked      | Double check which nginx.conf is mounted (standalone vs reverse proxy) |
+
+---
 
 ## 🔐 Security Best Practices Implemented
 
-* `server_tokens off`
-* HTTPS enforced
-* Secure headers (`X-Content-Type-Options`, `Referrer-Policy`, etc.)
-* Rate limiting
-* Self-signed certs auto-generated if missing
+* `server_tokens off` to hide version info
+* HTTPS enforced with redirect from HTTP
+* Rate limiting per IP (10r/s)
+* Secure headers: `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, `Permissions-Policy`
+* TLS certificate auto-generation via `cert-gen.sh`
+* Runtime user separation (optional)
+* Auto reload of rules via watcher
 
-## ⚡ Troubleshooting
-
-| Issue                  | Fix                                                  |
-| ---------------------- | ---------------------------------------------------- |
-| Rule not applied       | Restart container or run `make watch`                |
-| CRS not loading        | Check CRS path is correct and properly mounted       |
-| SSL error              | Run `cert-gen.sh` or ensure certs exist              |
-| ModSecurity not firing | Ensure `SecRuleEngine On` is set in modsecurity.conf |
 
 ## 🚪 License
 
@@ -107,4 +188,4 @@ PRs are welcome. Open issues for bugs or enhancements.
 
 ---
 
-Made with ❤️ by \[Yash Patel]. Secure your web apps the open way.
+Made with ❤️ by \Yash Patel. Secure your web apps the open way.
